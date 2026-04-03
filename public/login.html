@@ -52,55 +52,11 @@
 
     </div>
 
-    <!-- ❌ REMOVE THIS (won’t work on Vercel) -->
-    <!-- <script src="/socket.io/socket.io.js"></script> -->
-
-    <!-- ✅ ADD SOCKET FROM BACKEND -->
+    <!-- LOAD SOCKET.IO FROM BACKEND -->
     <script src="https://medi-monitor-backend.onrender.com/socket.io/socket.io.js"></script>
-
-    <script>
-        const BACKEND_URL = "https://medi-monitor-backend.onrender.com";
-
-        // LOGIN HANDLER
-        document.getElementById("login-form").addEventListener("submit", async function(e) {
-            e.preventDefault();
-
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            const errorDiv = document.getElementById("login-error");
-
-            try {
-                const res = await fetch(`${BACKEND_URL}/login`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    // redirect to correct dashboard
-                    window.location.href = data.redirect;
-                } else {
-                    errorDiv.innerText = "Invalid username or password";
-                    errorDiv.style.display = "block";
-                }
-
-            } catch (err) {
-                errorDiv.innerText = "Server not responding. Please wait 30 seconds...";
-                errorDiv.style.display = "block";
-            }
-        });
-
-        // SOCKET CONNECTION (for alerts)
-        const socket = io(BACKEND_URL);
-
-        socket.on("connect", () => {
-            console.log("Connected to backend");
-        });
-    </script>
+    
+    <!-- MAIN APPLICATION LOGIC -->
+    <script src="js/app.js"></script>
 
 </body>
 </html>

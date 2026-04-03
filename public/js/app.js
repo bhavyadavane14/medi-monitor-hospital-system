@@ -3,7 +3,7 @@ const BACKEND_URL = "https://medi-monitor-backend.onrender.com";
 
 let socket = null;
 if (typeof io !== 'undefined') {
-  socket = io("https://medi-monitor-backend.onrender.com");
+  socket = io(BACKEND_URL);
 }
 
 let currentUser = null;
@@ -33,18 +33,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
-
-                const data = await res.json();
-
-                if (data.error) {
-                    document.getElementById('login-error').textContent = data.error;
+                
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({ error: "Server error or incorrect path" }));
+                    document.getElementById('login-error').textContent = data.error || 'Server error';
                     document.getElementById('login-error').style.display = 'block';
-                } else {
-                    location.href = ROLE_PAGES[data.user.role];
+                    return;
                 }
 
+                const data = await res.json();
+                location.href = ROLE_PAGES[data.user.role];
+
             } catch (err) {
-                alert("Server not responding. Wait 20 sec.");
+                console.error(err);
+                alert("Server not responding. Please try again.");
             }
         });
     }

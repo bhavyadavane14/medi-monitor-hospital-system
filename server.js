@@ -21,8 +21,19 @@ const io = socketIo(server, {
 });
 
 // ✅ FIX CORS FOR FRONTEND
+const allowedOrigins = [
+    'https://medi-monitor-frontend.vercel.app', // Update with actual frontend URL
+    'http://localhost:3000'
+];
+
 app.use(cors({
-    origin: "*",
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ["GET", "POST"],
     credentials: true
 }));
