@@ -3,6 +3,7 @@ const session = require('express-session');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
+const cors = require('cors'); // ✅ ADD THIS
 const { initDb } = require('./src/models/database');
 
 // Initialize Database
@@ -10,17 +11,32 @@ initDb();
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+
+// ✅ FIX SOCKET CORS
+const io = socketIo(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
+
+// ✅ FIX CORS FOR FRONTEND
+app.use(cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true
+}));
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(session({
     secret: 'medimonitor-secret-key',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // Set to true if using HTTPS
+    cookie: { secure: false }
 }));
 
 // Socket.io connection logic
@@ -57,12 +73,12 @@ app.use('/api/alerts', alertRoutes);
 app.use('/api/checkups', checkupRoutes);
 app.use('/api/appointments', appointmentRoutes);
 
-// Catch-all to serve index.html for unknown routes (optional if using SPA logic)
+// Home route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.send("MediMonitor Backend Running ✅");
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`MediMonitor server running on http://localhost:${PORT}`);
+    console.log(`MediMonitor server running on port ${PORT}`);
 });
