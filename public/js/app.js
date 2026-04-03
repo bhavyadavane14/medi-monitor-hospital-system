@@ -1,10 +1,9 @@
 // MediMonitor Frontend Application Logic
-
-const BACKEND_URL = "https://medi-monitor-backend.onrender.com"; // ✅ IMPORTANT
+const BACKEND_URL = "https://medi-monitor-backend.onrender.com";
 
 let socket = null;
 if (typeof io !== 'undefined') {
-    socket = io(BACKEND_URL); // ✅ FIXED
+  socket = io("https://medi-monitor-backend.onrender.com");
 }
 
 let currentUser = null;
